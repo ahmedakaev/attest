@@ -393,9 +393,16 @@ export async function toggleLanguage(onLanguageChanged) {
 
 export async function initI18n(onLanguageChanged) {
     try {
-        currentLang = localStorage.getItem('attest_lang') || 'ru';
+        const urlParams = new URLSearchParams(window.location.search);
+        const queryLang = urlParams.get('lang');
+        if (queryLang && (queryLang === 'en' || queryLang === 'ru')) {
+            currentLang = queryLang;
+            localStorage.setItem('attest_lang', currentLang);
+        } else {
+            currentLang = localStorage.getItem('attest_lang') || 'en';
+        }
     } catch {
-        currentLang = 'ru';
+        currentLang = 'en';
     }
     await loadLocaleBundle(currentLang);
     applyTranslations();

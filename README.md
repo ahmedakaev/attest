@@ -1,5 +1,9 @@
 # Attest (attest-ai) 🛡️
 
+<p align="center">
+  <img src="assets/banner.png" alt="Attest — LLM Verification & Anti-Spoofing" width="100%">
+</p>
+
 **Behavioral Verification & Anti-Spoofing Detector for LLM API Providers**
 
 Attest verifies whether an OpenAI-compatible API endpoint is actually serving the advertised model, or if the provider has quietly swapped it with a cheaper, distilled, or quantized alternative (e.g. serving `gpt-4o-mini` instead of `gpt-4o`, or routing to lower-tier open models).
@@ -37,6 +41,10 @@ It combines single-token output fingerprinting with multi-tier statistical audit
 - **Zero Infiltration**: Baseline snapshots are captured and frozen strictly on-demand (at trusted moment $T_0$).
 - **Security-First**: API keys can be provided strictly via environment variables (`ATTEST_API_KEY_<ID>`), or stored encrypted at rest with Fernet (`~/.attest/master.key`). Keys are always masked in logs, CLI output, and UI. Vendor keys (`OPENAI_API_KEY`, `OPENROUTER_API_KEY`, ...) are only ever sent to that vendor's official API host, never to a reseller under audit. Baselines are sealed with HMAC-SHA256 keyed by the master key.
 - **Web Dashboard & CLI**: Full-featured dark-mode web UI (`attest ui`) and scriptable CLI for automated CI/CD pipelines (`0` = PASS, `1` = WARN, `2` = FAIL).
+
+<p align="center">
+  <img src="assets/dashboard.png" alt="Attest Web Dashboard & Differential Verification Studio" width="100%">
+</p>
 
 ---
 
