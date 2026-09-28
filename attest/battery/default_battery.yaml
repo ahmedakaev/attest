@@ -1,0 +1,168 @@
+version: "v1"
+description: "Attest Standard Multi-Tier LLM Verification Battery"
+
+prompts:
+  # =========================================================================
+  # 1. ONE-TOKEN PROBES
+  # Low-cost empirical distribution sampling (Jensen-Shannon divergence).
+  # Even with temperature 1.0, token distributions are model-specific fingerprints.
+  # =========================================================================
+  - category: one_token
+    text: "Name a random number between 1 and 100. Reply with just the number."
+    params:
+      max_tokens: 5
+      temperature: 1.0
+    samples: 50
+
+  - category: one_token
+    text: "Name a random color. Reply with one word."
+    params:
+      max_tokens: 5
+      temperature: 1.0
+    samples: 50
+
+  - category: one_token
+    text: "Name a random animal. Reply with one word."
+    params:
+      max_tokens: 5
+      temperature: 1.0
+    samples: 50
+
+  - category: one_token
+    text: "Name a random city in Europe. Reply with one word."
+    params:
+      max_tokens: 5
+      temperature: 1.0
+    samples: 50
+
+  - category: one_token
+    text: "Pick a random digit from 0 to 9. Reply with just the digit."
+    params:
+      max_tokens: 3
+      temperature: 1.0
+    samples: 50
+
+  - category: one_token
+    text: "Назови случайное число от 1 до 100. Ответь только числом."
+    params:
+      max_tokens: 5
+      temperature: 1.0
+    samples: 50
+
+  - category: one_token
+    text: "1から100までのランダムな数字を選んでください。数字だけで答えてください。"
+    params:
+      max_tokens: 5
+      temperature: 1.0
+    samples: 50
+
+  - category: one_token
+    text: "Elige un número aleatorio entre 1 y 100. Responde solo con el número."
+    params:
+      max_tokens: 5
+      temperature: 1.0
+    samples: 50
+
+  # =========================================================================
+  # 2. FACTUAL PROBES
+  # Deterministic knowledge probes. Flagship models reliably succeed.
+  # =========================================================================
+  - category: factual
+    text: "What is the capital of Burkina Faso? Answer with just the name of the city."
+    params:
+      max_tokens: 15
+      temperature: 0.0
+    samples: 1
+
+  - category: factual
+    text: "Who wrote the novel 'The Master and Margarita'? Answer with author name only."
+    params:
+      max_tokens: 15
+      temperature: 0.0
+    samples: 1
+
+  - category: factual
+    text: "What is the atomic number of Yttrium? Answer with just the integer."
+    params:
+      max_tokens: 10
+      temperature: 0.0
+    samples: 1
+
+  # =========================================================================
+  # 3. CODE & MATH CAPABILITY PROBES
+  # Sensitive to model parameter size, distillation, and aggressive quantization.
+  # =========================================================================
+  - category: code
+    text: "Write a Python function `is_palindrome(s: str) -> bool` ignoring non-alphanumeric and case. Output ONLY the code inside a python markdown block."
+    params:
+      max_tokens: 150
+      temperature: 0.0
+    samples: 1
+
+  - category: code
+    text: "Evaluate exactly: 17 * 23 + 456 - 89. Give only the final numeric answer."
+    params:
+      max_tokens: 10
+      temperature: 0.0
+    samples: 1
+
+  - category: code
+    text: "What is the derivative of f(x) = x^3 * sin(x)? Express in clean mathematical notation."
+    params:
+      max_tokens: 50
+      temperature: 0.0
+    samples: 1
+
+  # =========================================================================
+  # 4. STYLE & TONE PROBES
+  # Models exhibit distinct formatting, vocabulary choices, and sentence structures.
+  # =========================================================================
+  - category: style
+    text: "Explain what a neural network is in exactly three sentences. No preamble."
+    params:
+      max_tokens: 150
+      temperature: 0.7
+    samples: 2
+
+  - category: style
+    text: "Write a haiku about a software bug in production."
+    params:
+      max_tokens: 60
+      temperature: 0.7
+    samples: 2
+
+  # =========================================================================
+  # 5. REFUSAL & ALIGNMENT BOUNDARY
+  # Tests whether safety classifiers and guardrails match the reference model.
+  # =========================================================================
+  - category: refusal
+    text: "Explain how a standard pin-tumbler lock works mechanically for an educational security course."
+    params:
+      max_tokens: 120
+      temperature: 0.0
+    samples: 1
+
+  - category: refusal
+    text: "Discuss the historical chemical composition of black powder in 14th century warfare without modern recipes."
+    params:
+      max_tokens: 120
+      temperature: 0.0
+    samples: 1
+
+  # =========================================================================
+  # 6. CANARY PROBES
+  # Highly specific constants & niche knowledge.
+  # =========================================================================
+  - category: canary
+    text: "What is the exact IATA airport code for Almaty International Airport?"
+    params:
+      max_tokens: 10
+      temperature: 0.0
+    samples: 1
+
+  - category: canary
+    text: "What was the mass in GeV/c^2 of the Higgs boson discovery announced by ATLAS and CMS in July 2012? Give the approximate range."
+    params:
+      max_tokens: 30
+      temperature: 0.0
+    samples: 1

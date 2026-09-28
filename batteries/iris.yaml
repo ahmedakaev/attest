@@ -1,0 +1,50 @@
+version: "iris-2026"
+description: "IRIS Random-String Fingerprint — cheap substitution & partial-routing (dilution) audit, text-only, no logprobs (40 requests)"
+
+# Models are poor random generators and each has its own habits. The baseline answers
+# define what is typical for the real model; atypical run answers ("tells") above the
+# reference rate flag a swap, and their share estimates how much traffic is rerouted.
+# High-entropy probes (many symbols x several positions) separate models best, and the
+# number of requests matters more than answer length (arXiv 2607.20860).
+# Capture the baseline with this same battery on the official API.
+
+prompts:
+  # 10 symbols x 8 positions
+  - category: iris
+    text: "Write 8 random decimal digits. Output ONLY the digits, no spaces or other text."
+    params:
+      max_tokens: 20
+      temperature: 1.0
+    samples: 8
+
+  # Same probe in Russian: a substitute often differs more outside English
+  - category: iris
+    text: "Напиши 8 случайных цифр подряд. Выведи ТОЛЬКО цифры, без пробелов и другого текста."
+    params:
+      max_tokens: 20
+      temperature: 1.0
+    samples: 8
+
+  # 26 symbols x 6 positions
+  - category: iris
+    text: "Write a random string of 6 uppercase English letters. Output ONLY the letters, no other text."
+    params:
+      max_tokens: 20
+      temperature: 1.0
+    samples: 8
+
+  # 2 symbols x 10 positions: run-length habits
+  - category: iris
+    text: "Simulate 10 flips of a fair coin. Output ONLY the results as a string of H and T with no spaces, e.g. HTTHHTHTTH."
+    params:
+      max_tokens: 20
+      temperature: 1.0
+    samples: 8
+
+  # 10 symbols x 4 positions
+  - category: iris
+    text: "Pick a random 4-digit PIN code. Output ONLY the 4 digits."
+    params:
+      max_tokens: 20
+      temperature: 1.0
+    samples: 8

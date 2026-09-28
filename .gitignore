@@ -1,0 +1,35 @@
+# Virtual environments
+.venv/
+env/
+venv/
+
+# Python caches
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+build/
+
+# Linter / Testing
+.ruff_cache/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Local databases & keys
+*.db
+*.db-wal
+*.db-shm
+attest.db
+.attest/
+~/.attest/
+*.key
+*.pem
+report*.html
+dispute*.md
+.env
+.env.*
+attest.yaml
+attest.local.yaml
+ambient-grid.html

@@ -1,0 +1,8 @@
+version: "levels-2026"
+description: "Уровень 1 · Экспресс — первая линия защиты: полная подмена, подмена части трафика (≥30%), другой токенизатор, биллинг, скорость и TTFT (~44 запроса)"
+
+# Defence levels share the version "levels-2026", so their prompts are the same rows
+# in the database: a baseline captured at level N covers runs at every level <= N.
+include:
+  - iris
+  - tokenizer

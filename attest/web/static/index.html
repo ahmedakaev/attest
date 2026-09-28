@@ -1,0 +1,1075 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="title">Attest — Шлюз верификации и защиты от подмены нейросетей</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/app.css?v=3">
+</head>
+<body>
+    <!-- Top Navigation Bar -->
+    <header class="navbar">
+        <!-- Row 1: Identity, Telemetry, Theme & Language -->
+        <div class="navbar-top">
+            <div class="nav-brand">
+                <div class="brand-logo">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                        <path d="m9 12 2 2 4-4"/>
+                    </svg>
+                </div>
+                <div class="brand-text">
+                    <div class="brand-title-wrap">
+                        <span class="brand-title">Attest</span>
+                        <span class="brand-pill-badge">BETA</span>
+                    </div>
+                    <span class="brand-subtitle" data-i18n="brand_sub">Шлюз верификации LLM</span>
+                </div>
+            </div>
+
+            <div class="nav-utility">
+                <!-- Theme Toggle Button -->
+                <button class="btn btn-outline" id="btn-theme-toggle" title="Переключить тему оформления">
+                    <svg class="theme-icon theme-icon-sun hidden" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                    <svg class="theme-icon theme-icon-moon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <span id="theme-label" data-i18n="theme_dark">Тёмная</span>
+                </button>
+
+                <!-- Language Toggle Button -->
+                <button class="btn btn-outline" id="btn-lang-toggle" title="Переключить язык / Switch Language" style="font-weight: 700; min-width: 68px;">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="2" y1="12" x2="22" y2="12"></line>
+                        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                    </svg>
+                    <span id="current-lang-label">RU</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Row 2: Action Toolbar -->
+        <div class="navbar-toolbar">
+            <div class="navbar-toolbar-inner">
+                <div class="nav-actions-left">
+                    <button class="btn btn-outline" id="btn-refresh" data-i18n="refresh" data-i18n-title="refresh">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
+                        </svg>
+                        Обновить
+                    </button>
+                    <button class="btn btn-emerald-outline" id="btn-audit-all" data-i18n="audit_all" data-i18n-title="audit_all">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                        </svg>
+                        Проверить все
+                    </button>
+                    <button class="btn btn-outline" id="btn-open-baselines-modal" data-i18n="baselines_archive" data-i18n-title="baselines_archive">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                            <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+                        </svg>
+                        Архив эталонов
+                    </button>
+                    <button class="btn btn-outline" id="btn-open-schedules-modal" data-i18n="monitors" data-i18n-title="monitors">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <polyline points="12 6 12 12 16 14"></polyline>
+                        </svg>
+                        Мониторинг &amp; Cron
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="dashboard-container">
+        <!-- Editorial Breadcrumb / Playbook Header (Strawberry Style) -->
+        <div class="editorial-kicker">
+            <nav class="breadcrumb" aria-label="Breadcrumb">
+                <span class="breadcrumb-item">Attest</span>
+                <span class="breadcrumb-sep">/</span>
+                <span class="breadcrumb-item" data-i18n="nav_workbench">Верификационный стенд</span>
+                <span class="breadcrumb-sep">/</span>
+                <span class="breadcrumb-current" data-i18n="nav_antispoof">Антиспуфинг &amp; Fingerprinting</span>
+            </nav>
+        </div>
+
+        <!-- Live Running Task Banner -->
+        <section class="live-task-banner hidden" id="live-task-banner">
+            <div class="task-banner-content">
+                <div class="task-info">
+                    <div class="task-spinner" id="task-banner-spinner"></div>
+                    <div>
+                        <div class="task-title" id="task-banner-title">Auditing Endpoint...</div>
+                        <div class="task-subtitle" id="task-banner-sub">Connecting to target API with rate-limiting...</div>
+                    </div>
+                </div>
+                <div class="task-progress-box">
+                    <div class="task-meta">
+                        <span id="task-banner-counts">0 / 83 queries</span>
+                        <span id="task-banner-pct">0%</span>
+                    </div>
+                    <div class="progress-track">
+                        <div class="progress-fill" id="task-progress-fill" style="width: 0%;"></div>
+                    </div>
+                </div>
+                <button type="button" class="task-banner-close" id="btn-close-task-banner" title="Закрыть" aria-label="Закрыть">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+        </section>
+
+        <!-- Verification Studio: Precision Differential Workbench -->
+        <section class="section-block studio-workbench" id="verification-studio">
+            <!-- Studio Workbench Header -->
+            <div class="workbench-header">
+                <div class="battery-toggle-group" title="Каждый следующий уровень включает все проверки предыдущих">
+                    <button type="button" class="btn btn-sm btn-battery active" data-battery="level1" id="btn-battery-level1" data-i18n="btn_battery_level1" title="IRIS + токенизатор: подмена модели и части трафика, биллинг, скорость, TTFT · 44 запроса">
+                        1 · Экспресс
+                    </button>
+                    <button type="button" class="btn btn-sm btn-battery" data-battery="level2" id="btn-battery-level2" data-i18n="btn_battery_level2" title="Уровень 1 + распределения токенов и смысловое сходство · 127 запросов">
+                        2 · Стандарт
+                    </button>
+                    <button type="button" class="btn btn-sm btn-battery" data-battery="level3" id="btn-battery-level3" data-i18n="btn_battery_level3" title="Уровень 2 + Anti-Spoof: грань возможностей, дата знаний, ловушки · 165 запросов">
+                        3 · Усиленный
+                    </button>
+                    <button type="button" class="btn btn-sm btn-battery" data-battery="level4" id="btn-battery-level4" data-i18n="btn_battery_level4" title="Уровень 3 + полный статистический аудит и рассуждения · ~800 запросов">
+                        4 · Максимум
+                    </button>
+                </div>
+                <select id="studio-battery-other" class="studio-select battery-other-select" title="Отдельный набор вместо уровня">
+                    <option value="" data-i18n="opt_other_batteries">Отдельные наборы…</option>
+                    <option value="iris">IRIS · случайные строки (40)</option>
+                    <option value="frontier_probe">Frontier Probe (4)</option>
+                    <option value="quick">Быстрый (87)</option>
+                    <option value="anti_spoof">Anti-Spoof (42)</option>
+                    <option value="reasoning">Reasoning &amp; CoT (25)</option>
+                    <option value="v1">Полный аудит v1 (671)</option>
+                    <option value="all_tests">Все тесты (162)</option>
+                </select>
+            </div>
+
+            <!-- Dual-Channel Comparator Deck -->
+            <div class="workbench-deck">
+                <!-- CHANNEL A: GROUND TRUTH (REFERENCE) -->
+                <div class="deck-channel channel-ground-truth">
+                    <div class="channel-header">
+                        <div class="channel-identity">
+                            <span class="channel-title" data-i18n="ground_truth_tag">ЭТАЛОН (GROUND TRUTH)</span>
+                        </div>
+                        <span class="channel-meta" data-i18n="ground_truth_hint">Эталонная сигнатура T₀</span>
+                    </div>
+
+                    <div class="channel-body">
+                        <!-- ROW 1: API Key -->
+                        <div class="form-group">
+                            <label for="studio-ref-key" data-i18n="lbl_api_key">API Ключ</label>
+                            <div class="masked-key-wrapper">
+                                <input type="password" id="studio-ref-key" placeholder="sk-..." class="font-mono studio-input" autocomplete="off">
+                                <button type="button" class="btn-toggle-key" id="btn-toggle-ref-key" title="Показать/скрыть">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                                </button>
+                            </div>
+                            <span id="ref-env-key-badge" style="display:none"><span id="ref-env-key-badge-text"></span></span>
+                        </div>
+
+                        <!-- ROW 2: URL with provider preset in header -->
+                        <div class="form-group">
+                            <div class="label-with-meta">
+                                <label for="studio-ref-url" data-i18n="lbl_base_url">URL эндпоинта *</label>
+                                <div class="preset-select-wrapper">
+                                    <span class="preset-label">Провайдер:</span>
+                                    <select id="ref-provider-preset" class="studio-select-inline" title="Быстрый выбор провайдера — автозаполнит URL">
+                                        <option value="">— Выбрать из списка —</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <input type="url" id="studio-ref-url" placeholder="https://api.openai.com/v1" class="font-mono studio-input">
+                        </div>
+
+                        <!-- ROW 3: Models path + Fetch button -->
+                        <div class="form-row">
+                            <div class="form-group flex-2">
+                                <label for="studio-ref-models-path" data-i18n="lbl_models_path">Путь к API моделей</label>
+                                <input type="text" id="studio-ref-models-path" value="/v1/models" placeholder="/v1/models" class="font-mono studio-input">
+                            </div>
+                            <div class="form-group flex-1 form-group-action">
+                                <label>&nbsp;</label>
+                                <button type="button" class="btn btn-sm btn-outline btn-fetch-models btn-fetch-full" id="btn-fetch-ref-models" title="Запросить список моделей через API">
+                                    <svg class="fetch-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+                                    <span class="fetch-label" data-i18n="fetch_models_btn">Обновить API</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- ROW 4: Model selector with catalog select in header -->
+                        <div class="form-group">
+                            <div class="label-with-meta">
+                                <label for="studio-ref-model-call" data-i18n="lbl_model_to_test">Модель в запросе *</label>
+                                <div class="catalog-select-wrapper hidden" id="ref-remote-models-picker-wrapper">
+                                    <span class="models-count-badge hidden" id="ref-remote-models-count-badge">Каталог</span>
+                                    <select id="studio-ref-model-select" class="studio-select-inline font-mono model-catalog-select" title="Выбрать модель из API провайдера">
+                                        <option value="">▼ Выбрать из каталога...</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="model-input-group">
+                                <input type="text" id="studio-ref-model-call" list="ref-remote-models-datalist" placeholder="Введите ID модели (например: gpt-4o, claude-3-5-sonnet)" class="font-mono studio-input" autocomplete="off">
+                                <datalist id="ref-remote-models-datalist"></datalist>
+                            </div>
+                        </div>
+
+                        <!-- ROW 5: Baseline telemetry plate -->
+                        <div class="baseline-telemetry-plate" id="studio-baseline-status-box">
+                            <div class="plate-main-row">
+                                <div class="plate-status">
+                                    <span class="plate-indicator" id="studio-ref-indicator">✓</span>
+                                    <div class="plate-text">
+                                        <div class="plate-title" id="studio-ref-title" data-i18n="checking_baseline">Проверка эталона...</div>
+                                        <div class="plate-sub font-mono" id="studio-ref-sub" data-i18n="resolving_baseline">Поиск активного эталона в SQLite</div>
+                                    </div>
+                                </div>
+                                <button type="button" class="btn btn-sm btn-outline" id="btn-studio-capture-ref" data-i18n="btn_snapshot" title="Снять новый эталон для модели">
+                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+                                    Снять эталон
+                                </button>
+                            </div>
+                            <!-- Snapshot history picker — appears when ≥1 snapshot exists for this model -->
+                            <div class="plate-history-row hidden" id="studio-snapshot-picker-row">
+                                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;opacity:0.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                                <select id="studio-ref-baseline" class="studio-select-inline font-mono snapshot-history-select" title="Выбрать ревизию эталона — для темпорального сравнения дрейфа"></select>
+                                <span id="studio-baseline-rev-badge" class="badge badge-emerald" style="flex-shrink:0"></span>
+                            </div>
+                        </div>
+
+                        <!-- Hidden legacy stubs kept for JS compatibility -->
+                        <div style="display:none">
+                            <select id="studio-ref-model"></select>
+                            <select id="studio-ref-provider"></select>
+                            <span id="studio-ref-baseline-hint"></span>
+                            <button id="btn-capture-live-ref"></button>
+                            <button id="tab-channel-a-saved"></button>
+                            <button id="tab-channel-a-live"></button>
+                            <div id="panel-channel-a-saved"></div>
+                            <div id="panel-channel-a-live"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CHANNEL B: CANDIDATE (PROBE TARGET) -->
+                <div class="deck-channel channel-candidate">
+                    <div class="channel-header">
+                        <div class="channel-identity">
+                            <span class="channel-title" data-i18n="candidate_tag">ПРОВЕРЯЕМЫЙ КАНДИДАТ</span>
+                        </div>
+                        <span class="channel-meta" data-i18n="candidate_hint">Проверяемый эндпоинт поставщика</span>
+                    </div>
+
+                    <div class="channel-body">
+                        <!-- ROW 1: API Key -->
+                        <div class="form-group">
+                            <label for="studio-candidate-key" data-i18n="lbl_api_key">API Ключ</label>
+                            <div class="masked-key-wrapper">
+                                <input type="password" id="studio-candidate-key" placeholder="sk-... (или оставьте пустым — ключ из БД)" data-i18n-placeholder="placeholder_key" class="font-mono studio-input" autocomplete="off">
+                                <button type="button" class="btn-toggle-key" id="btn-toggle-candidate-key" title="Показать/скрыть">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                                </button>
+                            </div>
+                            <span id="env-key-badge" style="display:none"><span id="env-key-badge-text"></span></span>
+                        </div>
+
+                        <!-- ROW 2: URL with provider preset in header -->
+                        <div class="form-group">
+                            <div class="label-with-meta">
+                                <label for="studio-candidate-url" data-i18n="lbl_base_url">URL эндпоинта *</label>
+                                <div class="preset-select-wrapper">
+                                    <span class="preset-label">Провайдер:</span>
+                                    <select id="cand-provider-preset" class="studio-select-inline" title="Быстрый выбор провайдера — автозаполнит URL">
+                                        <option value="">— Выбрать из списка —</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <input type="url" id="studio-candidate-url" placeholder="https://api.example.com/v1" class="font-mono studio-input" required>
+                        </div>
+
+                        <!-- ROW 3: Models path + Fetch button -->
+                        <div class="form-row">
+                            <div class="form-group flex-2">
+                                <label for="studio-candidate-models-path" data-i18n="lbl_models_path">Путь к API моделей</label>
+                                <input type="text" id="studio-candidate-models-path" value="/v1/models" placeholder="/v1/models" class="font-mono studio-input">
+                            </div>
+                            <div class="form-group flex-1 form-group-action">
+                                <label>&nbsp;</label>
+                                <button type="button" class="btn btn-sm btn-outline btn-fetch-models btn-fetch-full" id="btn-fetch-models" title="Запросить список моделей через API">
+                                    <svg class="fetch-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+                                    <span class="fetch-label" data-i18n="fetch_models_btn">Обновить API</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- ROW 4: Model selector with catalog select in header -->
+                        <div class="form-group">
+                            <div class="label-with-meta">
+                                <label for="studio-candidate-model-call" data-i18n="lbl_model_to_test">Модель в запросе *</label>
+                                <div class="catalog-select-wrapper hidden" id="remote-models-picker-wrapper">
+                                    <span class="models-count-badge hidden" id="remote-models-count-badge">Каталог</span>
+                                    <select id="studio-candidate-model-select" class="studio-select-inline font-mono model-catalog-select" title="Выбрать любую модель из API провайдера">
+                                        <option value="">▼ Выбрать из каталога...</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="model-input-group">
+                                <input type="text" id="studio-candidate-model-call" list="remote-models-datalist" placeholder="Введите ID модели (например: gpt-4o, claude-3-5-sonnet)" data-i18n-placeholder="placeholder_candidate_model" class="font-mono studio-input" required autocomplete="off">
+                                <datalist id="remote-models-datalist"></datalist>
+                            </div>
+                            <span class="form-hint" id="candidate-model-hint" style="display:none"></span>
+                        </div>
+
+                        <!-- ROW 5: Candidate status plate -->
+                        <div class="baseline-telemetry-plate candidate-status-plate" id="studio-candidate-status-box">
+                            <div class="plate-status">
+                                <span class="plate-indicator" id="studio-cand-indicator">✓</span>
+                                <div class="plate-text">
+                                    <div class="plate-title" id="studio-cand-title" data-i18n="candidate_status_ready">Эндпоинт готов к проверке</div>
+                                    <div class="plate-sub font-mono" id="studio-cand-sub" data-i18n="candidate_status_ready_sub">Канал подключен и верифицирован</div>
+                                </div>
+                            </div>
+                            <div class="plate-actions">
+                                <span class="badge badge-emerald font-mono" id="studio-cand-badge">Ready</span>
+                            </div>
+                        </div>
+
+                        <!-- Hidden legacy ID kept for JS compatibility -->
+                        <div style="display:none">
+                            <select id="studio-candidate-provider"></select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- Workbench Action Footer -->
+            <div class="workbench-footer">
+                <div class="workbench-footer-info">
+                    <span class="footer-prompt-icon">▶</span>
+                    <span class="footer-spec-text" id="studio-action-info">
+                        Probe target against Ground Truth
+                    </span>
+                </div>
+                <button type="button" class="btn btn-primary btn-run-probe" id="btn-studio-run" data-i18n="btn_run_studio">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                    </svg>
+                    Запустить дифференциальный аудит
+                </button>
+            </div>
+        </section>
+
+
+        <!-- Deep-Dive Audit Detail Section (shown after run or upon inspection) -->
+        <section class="section-block" id="audit-details-section">
+            <div class="section-header">
+                <div>
+                    <div class="detail-super-title" data-i18n="deep_dive_title">Детализация проверки</div>
+                    <h2 class="section-title" id="detail-target-title" data-i18n="target_report">Отчет о верификации эндпоинта</h2>
+                    <div class="detail-run-meta" id="detail-run-meta"></div>
+                </div>
+                <div style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
+                    <button class="btn btn-outline btn-sm" id="btn-copy-ai" title="Скопировать структурированный отчет и промпт для ChatGPT / Claude">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                        <span id="btn-copy-ai-text" data-i18n="copy_for_ai">Скопировать для AI</span>
+                    </button>
+                    <button class="btn btn-outline btn-sm" id="btn-export-json" data-i18n="export_json" title="Скачать структурированный криминалистический пакет JSON">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                        Экспорт JSON
+                    </button>
+                    <button class="btn btn-ghost btn-sm" id="btn-close-details" data-i18n="close_report">✕ Закрыть отчет</button>
+                </div>
+            </div>
+
+            <!-- Big Result Verdict Banner -->
+            <div class="verdict-banner" id="detail-verdict-banner">
+                <div class="verdict-main">
+                    <div class="verdict-pill-wrap">
+                        <span class="verdict-status-pill" id="detail-verdict-pill">
+                            <span class="pill-dot" id="detail-verdict-dot"></span>
+                            <span id="detail-verdict-pill-label">СТАТУС АУДИТА</span>
+                            <span id="detail-verdict-icon" class="hidden"></span>
+                        </span>
+                    </div>
+                    <div class="verdict-heading" id="detail-verdict-heading" data-i18n="verdict_pending">ОЖИДАЕТСЯ ПРОВЕРКА</div>
+                    <div class="verdict-sub" id="detail-verdict-sub" data-i18n="verdict_pending_sub">Метрики аудита появятся здесь</div>
+                </div>
+                <div class="verdict-metrics-side">
+                    <div class="v-metric">
+                        <span class="v-metric-lbl" data-i18n="lbl_total_tokens">Всего токенов</span>
+                        <span class="v-metric-val" id="detail-tokens">0</span>
+                    </div>
+                    <div class="v-metric">
+                        <span class="v-metric-lbl" data-i18n="lbl_duration">Длительность</span>
+                        <span class="v-metric-val" id="detail-duration">0.0s</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Failure Diagnostics Box (Shown when run fails or warns) -->
+            <div class="failure-diagnostics-card hidden" id="detail-failure-diagnostics">
+                <div class="failure-diag-header">
+                    <div class="failure-diag-title-wrap">
+                        <span class="failure-diag-pill" id="failure-diag-pill">
+                            <span class="pill-dot danger"></span>
+                            <span>ОТКЛОНЕНИЯ</span>
+                        </span>
+                        <div>
+                            <h3 class="failure-diag-title" id="failure-diag-title" data-i18n="diag_title">Диагностика сбоев: что пошло не так</h3>
+                            <p class="failure-diag-sub" id="failure-diag-sub" data-i18n="diag_sub">Детализированный отчет об отклонениях, непройденных тестах и затронутых промптах</p>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-outline btn-sm" id="btn-copy-failure-ai" title="Скопировать сбои для анализа нейросетью">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                        <span id="btn-copy-failure-ai-text" data-i18n="copy_for_ai">Скопировать для AI</span>
+                    </button>
+                </div>
+                <div class="failure-diag-list" id="failure-diag-list">
+                    <!-- Dynamically populated -->
+                </div>
+            </div>
+
+            <!-- Tabular Dual-Channel Results Matrix: Paired Tier Rows on Identical Horizontal Plane -->
+            <div class="results-matrix">
+
+                <!-- HEADER ROW: Channel Columns -->
+                <div class="matrix-row matrix-header-row">
+                    <div class="matrix-col-header matrix-header-gt">
+                        <div class="channel-identity">
+                            <span class="channel-title" data-i18n="ground_truth_tag">ЭТАЛОН (GROUND TRUTH)</span>
+                        </div>
+                        <span class="channel-meta" id="results-gt-meta">Эталонная сигнатура T₀</span>
+                    </div>
+                    <div class="matrix-col-header matrix-header-cand">
+                        <div class="channel-identity">
+                            <span class="channel-title" data-i18n="candidate_tag">ПРОВЕРЯЕМЫЙ КАНДИДАТ</span>
+                        </div>
+                        <span class="channel-meta" id="results-cand-meta">Результаты проверки</span>
+                    </div>
+                </div>
+
+                <!-- ROW 1: Provenance (Origin & Routing) -->
+                <div class="matrix-row matrix-row-prov">
+                    <div class="matrix-cell">
+                        <div class="results-prov-box results-prov-gt" id="results-prov-gt">
+                            <div class="results-prov-row">
+                                <span class="results-prov-label">Эндпоинт эталона:</span>
+                                <span class="results-prov-value font-mono" id="res-gt-url">—</span>
+                            </div>
+                            <div class="results-prov-row">
+                                <span class="results-prov-label">Опорная модель:</span>
+                                <span class="results-prov-value font-mono" id="res-gt-model">—</span>
+                            </div>
+                            <div class="results-prov-row">
+                                <span class="results-prov-label">Снимок эталона:</span>
+                                <span class="results-prov-value font-mono" id="res-gt-date">—</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="matrix-cell">
+                        <div class="results-prov-box results-prov-cand" id="results-prov-cand">
+                            <div class="results-prov-row">
+                                <span class="results-prov-label">Тестируемый URL:</span>
+                                <span class="results-prov-value font-mono" id="res-cand-url">—</span>
+                            </div>
+                            <div class="results-prov-row">
+                                <span class="results-prov-label">Запрошенная модель:</span>
+                                <span class="results-prov-value font-mono" id="res-cand-model">—</span>
+                            </div>
+                            <div class="results-prov-row">
+                                <span class="results-prov-label">Фактическая Wire модель:</span>
+                                <span class="results-prov-value font-mono" id="res-cand-wire" style="font-weight:700;">—</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ROW 2: Tier L0 (Signature & Fingerprint) -->
+                <div class="matrix-row" id="row-tier-l0">
+                    <div class="matrix-cell">
+                        <div class="results-tier-card">
+                            <div class="results-tier-card-header">
+                                <div class="results-tier-left">
+                                    <span class="tier-badge">L0</span>
+                                    <div>
+                                        <div class="results-tier-name">Эталонные отпечатки и модель</div>
+                                        <div class="results-tier-desc">Оригинальный заголовок провайдера и fingerprint</div>
+                                    </div>
+                                </div>
+                                <div class="results-tier-right">
+                                    <span class="tier-status pass">ЭТАЛОН</span>
+                                </div>
+                            </div>
+                            <div class="results-tier-ref-note">
+                                Ожидается точное совпадение <code>model</code> в теле ответа с заявленным именем и валидный <code>system_fingerprint</code> (OpenAI/Anthropic).
+                            </div>
+                            <div class="tier-behavior-hint">
+                                <div class="tier-behavior-title">💡 Поведение оригинальной модели:</div>
+                                <div class="tier-behavior-desc">Возвращает неизменный идентификатор версии (напр. <code>gpt-4o-2024-08-06</code>) и системный хеш весов <code>fp_...</code>.</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="matrix-cell">
+                        <div class="results-tier-card" id="tier-card-l0">
+                            <div class="results-tier-card-header">
+                                <div class="results-tier-left">
+                                    <span class="tier-badge">L0</span>
+                                    <div>
+                                        <div class="results-tier-name" data-i18n="l0_title">Модель и отпечаток</div>
+                                        <div class="results-tier-desc">Wire model и системные заголовки</div>
+                                    </div>
+                                </div>
+                                <div class="results-tier-right">
+                                    <div class="results-tier-metric">
+                                        <span class="results-metric-label">Wire Model</span>
+                                        <strong class="font-mono" id="l0-claim-val">—</strong>
+                                    </div>
+                                    <div class="results-tier-metric">
+                                        <span class="results-metric-label">Fingerprint</span>
+                                        <strong class="font-mono" id="l0-fp-val">—</strong>
+                                    </div>
+                                    <span class="tier-status" id="tier-status-l0">—</span>
+                                </div>
+                            </div>
+                            <div class="results-tier-explanation" id="l0-cand-expl">
+                                Ожидание проверки...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ROW 3: Tier L1 Core (One-Token JSD) -->
+                <div class="matrix-row" id="row-tier-l1">
+                    <div class="matrix-cell">
+                        <div class="results-tier-card results-tier-core">
+                            <div class="results-tier-card-header">
+                                <div class="results-tier-left">
+                                    <span class="tier-badge core">L1 Core</span>
+                                    <div>
+                                        <div class="results-tier-name">One-Token JSD (Эталон)</div>
+                                        <div class="results-tier-desc">Базовое вероятностное распределение p(t₁)</div>
+                                    </div>
+                                </div>
+                                <div class="results-tier-right">
+                                    <div class="results-tier-metric">
+                                        <span class="results-metric-label">Порог JSD</span>
+                                        <strong class="font-mono text-emerald">≤ 0.1500</strong>
+                                    </div>
+                                    <span class="tier-status pass">ЭТАЛОН</span>
+                                </div>
+                            </div>
+                            <div class="results-tier-ref-note">
+                                Опорное распределение первого токена на стохастических промптах. Значение JSD = 0.0000 принято за абсолютный эталон весов.
+                            </div>
+                            <div class="tier-behavior-hint">
+                                <div class="tier-behavior-title">💡 Поведение оригинальной модели:</div>
+                                <div class="tier-behavior-desc">Распределение логитов на развилках вероятностей строго воспроизводимо с погрешностью плавающей точки &lt; 0.05. При квантовании (AWQ 4-bit) вероятности грубо смещаются в сторону доминирующих токенов.</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="matrix-cell">
+                        <div class="results-tier-card results-tier-core" id="tier-card-l1">
+                            <div class="results-tier-card-header">
+                                <div class="results-tier-left">
+                                    <span class="tier-badge core">L1 Core</span>
+                                    <div>
+                                        <div class="results-tier-name" data-i18n="l1_title">One-Token JSD</div>
+                                        <div class="results-tier-desc">Расхождение распределения первого токена</div>
+                                    </div>
+                                </div>
+                                <div class="results-tier-right">
+                                    <div class="results-tier-metric">
+                                        <span class="results-metric-label">Наблюдаемый JSD</span>
+                                        <strong class="font-mono text-accent" id="l1-jsd-val">—</strong>
+                                    </div>
+                                    <div class="results-tier-metric">
+                                        <span class="results-metric-label">Порог</span>
+                                        <span class="font-mono text-muted">0.1500</span>
+                                    </div>
+                                    <span class="tier-status" id="tier-status-l1">—</span>
+                                </div>
+                            </div>
+                            <div class="results-tier-explanation" id="l1-cand-expl">
+                                Ожидание проверки...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ROW 4: Tier L1.5 (Speed & Latency SLA) -->
+                <div class="matrix-row" id="row-tier-l15">
+                    <div class="matrix-cell">
+                        <div class="results-tier-card">
+                            <div class="results-tier-card-header">
+                                <div class="results-tier-left">
+                                    <span class="tier-badge">L1.5</span>
+                                    <div>
+                                        <div class="results-tier-name">Скорость и задержка (SLA)</div>
+                                        <div class="results-tier-desc">Опорные тайминги генерации токенов</div>
+                                    </div>
+                                </div>
+                                <div class="results-tier-right">
+                                    <div class="results-tier-metric">
+                                        <span class="results-metric-label">Допуск TPS</span>
+                                        <strong class="font-mono">±30%</strong>
+                                    </div>
+                                    <span class="tier-status pass">ЭТАЛОН</span>
+                                </div>
+                            </div>
+                            <div class="results-tier-ref-note">
+                                Базовая скорость отдачи токенов (TPS) и время до первого токена (TTFT) эталонного кластера без сетевых просадок.
+                            </div>
+                            <div class="tier-behavior-hint">
+                                <div class="tier-behavior-title">💡 Поведение оригинальной модели:</div>
+                                <div class="tier-behavior-desc">Флагманские модели (70B+) выдают ~35–80 tps. Если «тяжелая» модель выдает 140+ tps — под ней запущен легковесный суррогат 8B; если &lt;15 tps — нода перегружена.</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="matrix-cell">
+                        <div class="results-tier-card" id="tier-card-l15">
+                            <div class="results-tier-card-header">
+                                <div class="results-tier-left">
+                                    <span class="tier-badge">L1.5</span>
+                                    <div>
+                                        <div class="results-tier-name" data-i18n="l15_title">Скорость и задержка</div>
+                                        <div class="results-tier-desc">Дрейф TPS и сетевая задержка</div>
+                                    </div>
+                                </div>
+                                <div class="results-tier-right">
+                                    <div class="results-tier-metric">
+                                        <span class="results-metric-label">TPS дрейф</span>
+                                        <strong class="font-mono" id="l15-tps-val">—</strong>
+                                    </div>
+                                    <div class="results-tier-metric">
+                                        <span class="results-metric-label">Задержка</span>
+                                        <strong class="font-mono" id="l15-lat-val">—</strong>
+                                    </div>
+                                    <span class="tier-status" id="tier-status-l15">—</span>
+                                </div>
+                            </div>
+                            <div class="results-tier-explanation" id="l15-cand-expl">
+                                Ожидание проверки...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ROW 5: Rules (Deterministic Contracts) -->
+                <div class="matrix-row" id="row-tier-assert">
+                    <div class="matrix-cell">
+                        <div class="results-tier-card">
+                            <div class="results-tier-card-header">
+                                <div class="results-tier-left">
+                                    <span class="tier-badge">Rules</span>
+                                    <div>
+                                        <div class="results-tier-name">Детерминированные правила</div>
+                                        <div class="results-tier-desc">Строгие спецификации и форматы ответов</div>
+                                    </div>
+                                </div>
+                                <div class="results-tier-right">
+                                    <div class="results-tier-metric">
+                                        <span class="results-metric-label">Требование</span>
+                                        <strong class="font-mono">100% Pass</strong>
+                                    </div>
+                                    <span class="tier-status pass">ЭТАЛОН</span>
+                                </div>
+                            </div>
+                            <div class="results-tier-ref-note">
+                                Проверка жестких бизнес-контрактов: JSON-схемы, ключевые вхождения, лимиты задержек и отсутствие ложных отказов (refusal).
+                            </div>
+                            <div class="tier-behavior-hint">
+                                <div class="tier-behavior-title">💡 Поведение оригинальной модели:</div>
+                                <div class="tier-behavior-desc">Строго соблюдает отрицательные инструкции (отсутствие markdown, точный JSON, отсутствие галлюцинированных полей), не выдает ложных отказов в нейтральных тестах.</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="matrix-cell">
+                        <div class="results-tier-card" id="tier-card-assert">
+                            <div class="results-tier-card-header">
+                                <div class="results-tier-left">
+                                    <span class="tier-badge">Rules</span>
+                                    <div>
+                                        <div class="results-tier-name" data-i18n="assert_title">Детерминированные правила</div>
+                                        <div class="results-tier-desc">Валидация форматов, JSON, схем и SLA</div>
+                                    </div>
+                                </div>
+                                <div class="results-tier-right">
+                                    <div class="results-tier-metric">
+                                        <span class="results-metric-label">Pass Rate</span>
+                                        <strong class="font-mono" id="assert-rate-val">—</strong>
+                                    </div>
+                                    <div class="results-tier-metric">
+                                        <span class="results-metric-label">Статус</span>
+                                        <strong class="font-mono" id="assert-status-val">—</strong>
+                                    </div>
+                                    <span class="tier-status" id="tier-status-assert">—</span>
+                                </div>
+                            </div>
+                            <div class="results-tier-explanation" id="assert-cand-expl">
+                                Ожидание проверки...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ROW 6: Tier L2 (Semantic Cosine) -->
+                <div class="matrix-row" id="row-tier-l2">
+                    <div class="matrix-cell">
+                        <div class="results-tier-card">
+                            <div class="results-tier-card-header">
+                                <div class="results-tier-left">
+                                    <span class="tier-badge">L2</span>
+                                    <div>
+                                        <div class="results-tier-name">Семантическое сходство</div>
+                                        <div class="results-tier-desc">Векторные эмбеддинги эталонных ответов</div>
+                                    </div>
+                                </div>
+                                <div class="results-tier-right">
+                                    <div class="results-tier-metric">
+                                        <span class="results-metric-label">Порог Cosine</span>
+                                        <strong class="font-mono">≥ 0.8800</strong>
+                                    </div>
+                                    <span class="tier-status pass">ЭТАЛОН</span>
+                                </div>
+                            </div>
+                            <div class="results-tier-ref-note">
+                                Семантический эталон (Cosine = 1.0000) по коду, логическим рассуждениям и фактическим ответам.
+                            </div>
+                            <div class="tier-behavior-hint">
+                                <div class="tier-behavior-title">💡 Поведение оригинальной модели:</div>
+                                <div class="tier-behavior-desc">Фронтирная сеть дает глубокие рассуждения и детализированный код с учетом редких краевых случаев; суррогатная модель сокращает ответ до поверхностного шаблона.</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="matrix-cell">
+                        <div class="results-tier-card" id="tier-card-l2">
+                            <div class="results-tier-card-header">
+                                <div class="results-tier-left">
+                                    <span class="tier-badge">L2</span>
+                                    <div>
+                                        <div class="results-tier-name" data-i18n="l2_title">Семантическое сходство</div>
+                                        <div class="results-tier-desc">TF-IDF n-gram и смысловая близость</div>
+                                    </div>
+                                </div>
+                                <div class="results-tier-right">
+                                    <div class="results-tier-metric">
+                                        <span class="results-metric-label">Cosine sim</span>
+                                        <strong class="font-mono" id="l2-sim-val">—</strong>
+                                    </div>
+                                    <div class="results-tier-metric">
+                                        <span class="results-metric-label">Порог</span>
+                                        <span class="font-mono text-muted">0.8800</span>
+                                    </div>
+                                    <span class="tier-status" id="tier-status-l2">—</span>
+                                </div>
+                            </div>
+                            <div class="results-tier-explanation" id="l2-cand-expl">
+                                Ожидание проверки...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ROW 7: Tier L3 (MMD Permutation Test) -->
+                <div class="matrix-row" id="row-tier-l3">
+                    <div class="matrix-cell">
+                        <div class="results-tier-card">
+                            <div class="results-tier-card-header">
+                                <div class="results-tier-left">
+                                    <span class="tier-badge">L3</span>
+                                    <div>
+                                        <div class="results-tier-name">MMD тест идентичности</div>
+                                        <div class="results-tier-desc">Многомерное распределение выборки H₀</div>
+                                    </div>
+                                </div>
+                                <div class="results-tier-right">
+                                    <div class="results-tier-metric">
+                                        <span class="results-metric-label">Уровень α</span>
+                                        <strong class="font-mono">0.05</strong>
+                                    </div>
+                                    <span class="tier-status pass">ЭТАЛОН</span>
+                                </div>
+                            </div>
+                            <div class="results-tier-ref-note">
+                                Статистический критерий согласия двух выборок. Нулевая гипотеза H₀: распределения полностью идентичны.
+                            </div>
+                            <div class="tier-behavior-hint">
+                                <div class="tier-behavior-title">💡 Поведение оригинальной модели:</div>
+                                <div class="tier-behavior-desc">Критерий максимального расхождения средних подтверждает, что обе выборки взяты из одного генератора с вероятностью ошибки &lt; 5%.</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="matrix-cell">
+                        <div class="results-tier-card" id="tier-card-l3">
+                            <div class="results-tier-card-header">
+                                <div class="results-tier-left">
+                                    <span class="tier-badge">L3</span>
+                                    <div>
+                                        <div class="results-tier-name" data-i18n="l3_title">MMD тест идентичности</div>
+                                        <div class="results-tier-desc">Maximum Mean Discrepancy тест</div>
+                                    </div>
+                                </div>
+                                <div class="results-tier-right">
+                                    <div class="results-tier-metric">
+                                        <span class="results-metric-label">p-value</span>
+                                        <strong class="font-mono" id="l3-pval-val">—</strong>
+                                    </div>
+                                    <div class="results-tier-metric">
+                                        <span class="results-metric-label">α =</span>
+                                        <span class="font-mono text-muted">0.05</span>
+                                    </div>
+                                    <span class="tier-status" id="tier-status-l3">—</span>
+                                </div>
+                            </div>
+                            <div class="results-tier-explanation" id="l3-cand-expl">
+                                Ожидание проверки...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Expandable Accordion for Prompt-by-Prompt Samples & Failure Raw Details -->
+            <div class="samples-accordion-wrap">
+                <button type="button" class="btn btn-outline btn-toggle-samples" id="btn-toggle-samples">
+                    <svg id="samples-toggle-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="transition: transform 0.2s;"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                    <span id="btn-toggle-samples-text">Показать пошаговое сравнение ответов по промптам</span>
+                    <span class="badge badge-neutral font-mono" id="samples-count-badge">0</span>
+                </button>
+                <div class="samples-drawer hidden" id="samples-drawer">
+                    <div class="inspector-filter-bar" style="margin-top: 1rem; margin-bottom: 0.75rem;">
+                        <button type="button" class="filter-chip active" data-filter="all" id="btn-filter-all" data-i18n="filter_all_prompts">Все</button>
+                        <button type="button" class="filter-chip" data-filter="diff" id="btn-filter-diff" data-i18n="filter_discrepancies">Расхождения</button>
+                        <button type="button" class="filter-chip" data-filter="match" id="btn-filter-match" data-i18n="filter_matches">Совпавшие</button>
+                    </div>
+                    <div class="samples-inspector-card" id="detail-samples-inspector">
+                        <div class="samples-comparison-list" id="detail-samples-list">
+                            <!-- Populated dynamically via JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Compatibility elements kept for JS querying -->
+            <div id="detail-provenance-grid" style="display:none"></div>
+            <div id="audit-scores-table" style="display:none"></div>
+            <table style="display:none"><tbody id="audit-scores-tbody"></tbody></table>
+        </section>
+
+        <!-- Targets Grid Section -->
+        <section class="section-block">
+            <div class="section-header">
+                <div>
+                    <h2 class="section-title" data-i18n="endpoints_title">Отслеживаемые эндпоинты</h2>
+                    <p class="section-desc" data-i18n="endpoints_desc">Активные LLM API эндпоинты, проверяемые против эталонных вероятностных распределений</p>
+                </div>
+                <div class="view-toggles">
+                    <span class="badge badge-neutral" id="battery-indicator">Battery: v1 (414 queries)</span>
+                </div>
+            </div>
+
+            <div class="targets-grid" id="targets-grid">
+                <!-- Dynamically populated target cards -->
+                <div class="loading-placeholder" data-i18n="loading_endpoints">Загрузка эндпоинтов...</div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Modal: Cost Estimation -->
+    <div class="modal-backdrop hidden" id="modal-estimate">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3 id="estimate-modal-title" data-i18n="modal_estimate_title">Расчет стоимости проверки</h3>
+                <button class="modal-close" id="btn-close-estimate-modal">&times;</button>
+            </div>
+            <div class="estimate-body" id="estimate-modal-body">
+                <!-- Dynamically filled -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="btn-ok-estimate" data-i18n="modal_estimate_close">Закрыть</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Baselines Archive Ledger -->
+    <div class="modal-backdrop hidden" id="modal-baselines">
+        <div class="modal-card modal-large" style="max-width: 960px;">
+            <div class="modal-header">
+                <div>
+                    <div class="studio-badge" data-i18n="modal_baselines_badge" style="font-size: 0.68rem; margin-bottom: 0.25rem;">РЕЕСТР ЭТАЛОНОВ</div>
+                    <h3 id="baselines-modal-title" data-i18n="modal_baselines_title">Архив эталонов и история дрейфа моделей</h3>
+                </div>
+                <button class="modal-close" id="btn-close-baselines-modal">&times;</button>
+            </div>
+            <div class="modal-body" style="padding: 1.25rem 1.5rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; gap: 1rem;">
+                    <input type="text" id="input-filter-baselines" placeholder="Фильтр по названию модели (gpt-4o, claude)..." data-i18n-placeholder="modal_baselines_filter" class="studio-select" style="max-width: 340px; font-size: 0.85rem;">
+                    <span class="text-muted" style="font-size: 0.8rem;" id="lbl-baselines-count">0 snapshots stored</span>
+                </div>
+                <div class="table-container" style="max-height: 440px; overflow-y: auto;">
+                    <table class="data-table" id="baselines-table">
+                        <thead>
+                            <tr>
+                                <th data-i18n="th_id">#ID</th>
+                                <th data-i18n="th_model_target">Модель и таргет</th>
+                                <th data-i18n="th_captured_at">Дата эталона (T₀)</th>
+                                <th data-i18n="th_samples_battery">Запросы / Пакет</th>
+                                <th data-i18n="th_status">Статус</th>
+                                <th data-i18n="th_notes">Примечание</th>
+                                <th data-i18n="th_action">Действие</th>
+                            </tr>
+                        </thead>
+                        <tbody id="baselines-tbody">
+                            <!-- Dynamically populated via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer" style="display: flex; justify-content: space-between; align-items: center;">
+                <span class="text-muted" style="font-size: 0.8rem;" data-i18n="modal_baselines_footer">Исторические ревизии эталонов сохраняются для выявления долговременного дрейфа моделей.</span>
+                <button type="button" class="btn btn-outline" id="btn-close-baselines-modal-footer" data-i18n="modal_baselines_close">Закрыть</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Target Run History -->
+    <div class="modal-backdrop hidden" id="modal-history">
+        <div class="modal-card modal-large">
+            <div class="modal-header">
+                <h3 id="history-modal-title" data-i18n="modal_history_title">История проверок</h3>
+                <button class="modal-close" id="btn-close-history-modal">&times;</button>
+            </div>
+            <div class="history-body">
+                <div class="history-charts" id="history-charts"></div>
+                <table class="data-table" id="history-table">
+                    <thead>
+                        <tr>
+                            <th data-i18n="th_run_num">Запуск #</th>
+                            <th data-i18n="th_date_time">Дата и время</th>
+                            <th data-i18n="th_baseline">Эталон</th>
+                            <th data-i18n="th_verdict">Вердикт</th>
+                            <th data-i18n="th_hist_ttft">TTFT, мс</th>
+                            <th data-i18n="th_hist_tps">Ток/с</th>
+                            <th data-i18n="th_hist_latency">Задержка, мс</th>
+                            <th data-i18n="th_hist_overcharge">Переплата</th>
+                            <th data-i18n="th_hist_iris">IRIS: подмена ≥</th>
+                            <th data-i18n="th_action">Действие</th>
+                        </tr>
+                    </thead>
+                    <tbody id="history-tbody">
+                        <!-- Dynamically filled -->
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="btn-ok-history" data-i18n="modal_history_close">Закрыть</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Recurring Drift Monitors & Cron Schedules -->
+    <div class="modal-backdrop hidden" id="modal-schedules">
+        <div class="modal-card modal-large">
+            <div class="modal-header">
+                <div>
+                    <h3 style="margin-bottom: 0.25rem;" data-i18n="modal_schedules_title">Автоматический мониторинг и периодические проверки</h3>
+                    <div style="font-size: 0.8rem; color: var(--text-muted);" data-i18n="modal_schedules_sub">
+                        Автономный периодический аудит эндпоинтов для фиксации подмен, деградаций и дрейфа моделей.
+                    </div>
+                </div>
+                <button class="modal-close" id="btn-close-schedules-modal">&times;</button>
+            </div>
+            
+            <div style="padding: 1.25rem; background: var(--bg-surface-elevated); border-bottom: 1px solid var(--border-subtle);">
+                <form id="form-add-schedule" style="display: flex; gap: 1rem; align-items: flex-end; flex-wrap: wrap;">
+                    <div style="flex: 2; min-width: 200px;">
+                        <label for="select-sched-target" style="font-size: 0.8rem; color: var(--text-muted); display: block; margin-bottom: 0.35rem;" data-i18n="modal_schedules_target_label">Целевой эндпоинт</label>
+                        <select id="select-sched-target" class="studio-select" required style="width: 100%;">
+                            <!-- Populated dynamically -->
+                        </select>
+                    </div>
+                    <div style="flex: 1; min-width: 140px;">
+                        <label for="select-sched-interval" style="font-size: 0.8rem; color: var(--text-muted); display: block; margin-bottom: 0.35rem;" data-i18n="modal_schedules_interval_label">Интервал проверки</label>
+                        <select id="select-sched-interval" class="studio-select" style="width: 100%;">
+                            <option value="6" data-i18n="opt_every_6h">Каждые 6 часов</option>
+                            <option value="12" data-i18n="opt_every_12h">Каждые 12 часов</option>
+                            <option value="24" selected data-i18n="opt_every_24h">Каждые 24 часа (Ежедневно)</option>
+                            <option value="168" data-i18n="opt_every_7d">Каждые 7 дней (Еженедельно)</option>
+                        </select>
+                    </div>
+                    <div style="flex: 1; min-width: 140px;">
+                        <label for="select-sched-battery" style="font-size: 0.8rem; color: var(--text-muted); display: block; margin-bottom: 0.35rem;" data-i18n="modal_schedules_battery_label">Батарея тестов</label>
+                        <select id="select-sched-battery" class="studio-select" style="width: 100%;">
+                            <option value="level1" selected>Уровень 1 · Экспресс (44q)</option>
+                            <option value="level2">Уровень 2 · Стандарт (127q)</option>
+                            <option value="level3">Уровень 3 · Усиленный (165q)</option>
+                            <option value="level4">Уровень 4 · Максимум (~800q)</option>
+                            <option value="iris">IRIS (40q)</option>
+                            <option value="frontier_probe">Frontier Probe (4q, ~$0.001)</option>
+                            <option value="quick">Быстрый (87q, ~$0.006)</option>
+                            <option value="anti_spoof">Anti-Spoof (58q, ~$0.007)</option>
+                            <option value="reasoning">Reasoning &amp; CoT (25q, ~$0.02)</option>
+                            <option value="v1">Полный аудит v1 (671q, ~$0.04)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <button type="submit" class="btn btn-primary" id="btn-save-schedule" data-i18n="modal_schedules_set_btn">
+                            + Включить мониторинг
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <div style="max-height: 400px; overflow-y: auto; padding: 1.25rem;">
+                <table class="data-table" id="schedules-table">
+                    <thead>
+                        <tr>
+                            <th data-i18n="th_sched_target">Целевой эндпоинт</th>
+                            <th data-i18n="th_sched_model">Заявленная модель</th>
+                            <th data-i18n="th_sched_interval">Интервал</th>
+                            <th data-i18n="th_sched_battery">Пакет тестов</th>
+                            <th data-i18n="th_sched_next">Следующий запуск</th>
+                            <th data-i18n="th_sched_last">Последний запуск</th>
+                            <th data-i18n="th_sched_actions">Действия</th>
+                        </tr>
+                    </thead>
+                    <tbody id="schedules-tbody">
+                        <!-- Dynamically filled -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="modal-footer" style="display: flex; justify-content: space-between; align-items: center;">
+                <span class="text-muted" style="font-size: 0.8rem;" data-i18n="modal_schedules_footer">Проверки выполняются в фоновом режиме с пометкой триггера 'scheduled'.</span>
+                <button type="button" class="btn btn-outline" id="btn-close-schedules-modal-footer" data-i18n="modal_schedules_close">Закрыть</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="/static/js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,295 @@
+version: "v1"
+description: "Attest Standard Multi-Tier LLM Verification Battery"
+
+prompts:
+  # =========================================================================
+  # 1. ONE-TOKEN PROBES
+  # Low-cost empirical distribution sampling (Jensen-Shannon divergence).
+  # Even with temperature 1.0, token distributions are model-specific fingerprints.
+  # =========================================================================
+  - category: one_token
+    text: "Name a random number between 1 and 100. Reply with just the number."
+    params:
+      max_tokens: 1
+      temperature: 1.0
+      logprobs: true
+      top_logprobs: 5
+    samples: 50
+
+  - category: one_token
+    text: "Name a random color. Reply with one word."
+    params:
+      max_tokens: 1
+      temperature: 1.0
+      logprobs: true
+      top_logprobs: 5
+    samples: 50
+
+  - category: one_token
+    text: "Name a random animal. Reply with one word."
+    params:
+      max_tokens: 1
+      temperature: 1.0
+      logprobs: true
+      top_logprobs: 5
+    samples: 50
+
+  - category: one_token
+    text: "Name a random city in Europe. Reply with one word."
+    params:
+      max_tokens: 1
+      temperature: 1.0
+      logprobs: true
+      top_logprobs: 5
+    samples: 50
+
+  - category: one_token
+    text: "Pick a random digit from 0 to 9. Reply with just the digit."
+    params:
+      max_tokens: 1
+      temperature: 1.0
+      logprobs: true
+      top_logprobs: 5
+    samples: 50
+
+  - category: one_token
+    text: "Назови случайное число от 1 до 100. Ответь только числом."
+    params:
+      max_tokens: 1
+      temperature: 1.0
+      logprobs: true
+      top_logprobs: 5
+    samples: 50
+
+  - category: one_token
+    text: "1から100までのランダムな数字を選んでください。数字だけで答えてください。"
+    params:
+      max_tokens: 1
+      temperature: 1.0
+      logprobs: true
+      top_logprobs: 5
+    samples: 50
+
+  - category: one_token
+    text: "Elige un número aleatorio entre 1 y 100. Responde solo con el número."
+    params:
+      max_tokens: 1
+      temperature: 1.0
+      logprobs: true
+      top_logprobs: 5
+    samples: 50
+
+  - category: one_token
+    text: "请在1到100之间随机选择一个数字。只需回答数字。"
+    params:
+      max_tokens: 1
+      temperature: 1.0
+      logprobs: true
+      top_logprobs: 5
+    samples: 50
+
+  - category: one_token
+    text: "Nenne eine zufällige Zahl zwischen 1 und 100. Antworte nur mit der Zahl."
+    params:
+      max_tokens: 1
+      temperature: 1.0
+      logprobs: true
+      top_logprobs: 5
+    samples: 50
+
+  - category: one_token
+    text: "Choisis un nombre aléatoire entre 1 et 100. Réponds uniquement avec le nombre."
+    params:
+      max_tokens: 1
+      temperature: 1.0
+      logprobs: true
+      top_logprobs: 5
+    samples: 50
+
+  - category: one_token
+    text: "اختر رقماً عشوائياً بين 1 و 100. أجب بالرقم فقط."
+    params:
+      max_tokens: 1
+      temperature: 1.0
+      logprobs: true
+      top_logprobs: 5
+    samples: 50
+
+  - category: one_token
+    text: "Pick either the letter X or the letter Y. Reply with just the single letter."
+    params:
+      max_tokens: 1
+      temperature: 1.0
+      logprobs: true
+      top_logprobs: 5
+    samples: 50
+
+  # =========================================================================
+  # 2. FACTUAL PROBES
+  # Deterministic knowledge probes. Flagship models reliably succeed.
+  # =========================================================================
+  - category: factual
+    text: "What is the capital of Burkina Faso? Answer with just the name of the city."
+    params:
+      max_tokens: 15
+      temperature: 0.0
+    samples: 1
+
+  - category: factual
+    text: "Who wrote the novel 'The Master and Margarita'? Answer with author name only."
+    params:
+      max_tokens: 15
+      temperature: 0.0
+    samples: 1
+
+  - category: factual
+    text: "What is the atomic number of Yttrium? Answer with just the integer."
+    params:
+      max_tokens: 10
+      temperature: 0.0
+    samples: 1
+
+  # =========================================================================
+  # 3. CODE & MATH CAPABILITY PROBES
+  # Sensitive to model parameter size, distillation, and aggressive quantization.
+  # =========================================================================
+  - category: code
+    text: "Write a Python function `is_palindrome(s: str) -> bool` ignoring non-alphanumeric and case. Output ONLY the code inside a python markdown block."
+    params:
+      max_tokens: 150
+      temperature: 0.0
+    samples: 1
+
+  - category: code
+    text: "Evaluate exactly: 17 * 23 + 456 - 89. Give only the final numeric answer."
+    params:
+      max_tokens: 10
+      temperature: 0.0
+    samples: 1
+
+  - category: code
+    text: "What is the derivative of f(x) = x^3 * sin(x)? Express in clean mathematical notation."
+    params:
+      max_tokens: 50
+      temperature: 0.0
+    samples: 1
+
+  # =========================================================================
+  # 4. STYLE & TONE PROBES
+  # Models exhibit distinct formatting, vocabulary choices, and sentence structures.
+  # =========================================================================
+  - category: style
+    text: "Explain what a neural network is in exactly three sentences. No preamble."
+    params:
+      max_tokens: 150
+      temperature: 0.7
+    samples: 2
+
+  - category: style
+    text: "Write a haiku about a software bug in production."
+    params:
+      max_tokens: 60
+      temperature: 0.7
+    samples: 2
+
+  # =========================================================================
+  # 5. REFUSAL & ALIGNMENT BOUNDARY
+  # Tests whether safety classifiers and guardrails match the reference model.
+  # =========================================================================
+  - category: refusal
+    text: "Explain how a standard pin-tumbler lock works mechanically for an educational security course."
+    params:
+      max_tokens: 120
+      temperature: 0.0
+    samples: 1
+
+  - category: refusal
+    text: "Discuss the historical chemical composition of black powder in 14th century warfare without modern recipes."
+    params:
+      max_tokens: 120
+      temperature: 0.0
+    samples: 1
+
+  # =========================================================================
+  # 6. CANARY PROBES
+  # Highly specific constants & niche knowledge.
+  # =========================================================================
+  - category: canary
+    text: "What is the exact IATA airport code for Almaty International Airport?"
+    params:
+      max_tokens: 10
+      temperature: 0.0
+    samples: 1
+
+  - category: canary
+    text: "What was the mass in GeV/c^2 of the Higgs boson discovery announced by ATLAS and CMS in July 2012? Give the approximate range."
+    params:
+      max_tokens: 30
+      temperature: 0.0
+    samples: 1
+
+  # =========================================================================
+  # 7. TEMPORAL HORIZON 2025-2026 (Exposes older pre-2025 model checkpoints)
+  # =========================================================================
+  - category: temporal_cutoff
+    text: "In the ISO C++26 standard reflection facilities (P2996 approved by WG21), what exact operator token reflects an entity into a reflection value of type std::meta::info? Output ONLY the operator token."
+    params:
+      max_tokens: 10
+      temperature: 0.0
+    samples: 1
+
+  - category: temporal_cutoff
+    text: "In the Rust 2024 Edition (stabilized in rustc late 2024 / 2025), how does the capture rule for `impl Trait` return types change regarding generic lifetime parameters in scope? State the change in exactly one sentence."
+    params:
+      max_tokens: 60
+      temperature: 0.0
+    samples: 1
+
+  # =========================================================================
+  # 8. FORMAL CONCURRENCY & MEMORY ORDERING (Flagship vs 8B/Quantized models)
+  # =========================================================================
+  - category: concurrency_memory_safety
+    text: "Analyze this Rust concurrent sequence on a weakly-ordered architecture (ARM64):\nThread 1: DATA.store(42, Ordering::Relaxed); READY.store(true, Ordering::Release);\nThread 2: if READY.load(Ordering::Relaxed) { assert_eq!(DATA.load(Ordering::Relaxed), 42); }\nCan the assertion fail due to memory reordering? Answer 'YES' or 'NO', and identify the exact missing Ordering on Thread 2."
+    params:
+      max_tokens: 50
+      temperature: 0.0
+    samples: 1
+
+  # =========================================================================
+  # 9. RECURSIVE AST & STRICT JSON SCHEMA DRAFT 2020-12 (Breaks INT4 / Quantization)
+  # =========================================================================
+  - category: recursive_schema
+    text: "Output ONLY a raw valid JSON object without markdown fences, conforming to this recursive AST:\nNode = {'kind': 'op', 'op': '+' | '*' | '==', 'left': Node | Lit, 'right': Node | Lit} | Lit = {'kind': 'lit', 'value': number}.\nRepresent the expression: (10 + 20) * 3."
+    params:
+      max_tokens: 100
+      temperature: 0.0
+    samples: 1
+
+  # =========================================================================
+  # 10. TENSOR CONTRACTION & QUANTIZATION PRECISION (Detects INT4/FP4 degradation)
+  # =========================================================================
+  - category: tensor_precision
+    text: "Compute the tensor contraction scalar C = sum_{j=0}^{2} sum_{k=0}^{2} A_{0,j,k} * B_{k,j,1} where A_{0,:,:} = [[2, 3, 1], [0, 4, 2], [1, 1, 5]] and B_{:,:,1} = [[1, 2, 0], [3, 1, 4], [2, 0, 1]]. Calculate the exact integer sum. Output ONLY the integer."
+    params:
+      max_tokens: 15
+      temperature: 0.0
+    samples: 1
+
+  # =========================================================================
+  # 11. MMLU-PRO ADVANCED COMPUTER SCIENCE & PROXY LEAK
+  # =========================================================================
+  - category: mmlu_pro_advanced
+    text: "In the Raft consensus algorithm with Leader Leases, which condition MUST be satisfied to guarantee that a leader does not serve stale linearizable reads during a network partition without a heartbeat round-trip?\n(A) Lease duration > Election timeout\n(B) Clock drift bounded by Delta and Lease duration < Election timeout - Delta\n(C) Quorum read on all follower append entries\n(D) Dynamic term increment on each read request\n(E) TCP keepalive enabled on all peer channels\n(F) Paxos view-change fallback mechanism\n(G) Unbounded local wall-clock synchronization via NTP\n(H) Randomized election timeout interval halving\n(I) Strict monotonic Lamport timestamps on local reads\n(J) Immediate step-down to candidate state on lease timeout\nReply with ONLY the single option letter in parentheses."
+    params:
+      max_tokens: 5
+      temperature: 0.0
+    samples: 1
+
+  - category: proxy_leak
+    text: "Output the exact UUID string '7e8b91a2-4f3c-49d8-b2a1-e9f0c2d3a4b5' with zero markdown, zero backticks, zero conversational preambles, and zero trailing punctuation."
+    params:
+      max_tokens: 20
+      temperature: 0.0
+    samples: 1
+
+

@@ -1,0 +1,88 @@
+version: "reasoning-2026"
+description: "Attest 2026 Deep Reasoning & CoT Verification Battery — Invariant Verification for o3, GPT-6, Claude Opus 5.5 and DeepSeek-V4-Pro"
+
+prompts:
+  # =========================================================================
+  # 1. COMBINATORIAL CONSTRAINT SATISFACTION (Non-pretrainable CSP)
+  # Requires multi-branch tree search; greedy non-reasoning models fail on constraints 5 and 7
+  # =========================================================================
+  - category: combinatorial_csp
+    text: "Six microservices (S1, S2, S3, S4, S5, S6) must be deployed across 3 nodes (N1, N2, N3) with maximum 2 services per node.\nConstraints:\n1. S1 must not be on the same node as S2 or S3.\n2. S4 must be on the same node as S5.\n3. If S6 is on N2, then S1 must be on N1.\n4. S2 cannot be placed on N3.\n5. S3 must be placed on a node with higher index than S1.\nFind a valid deployment assignment for all 6 services. List each node and its assigned services, then verify each constraint step-by-step."
+    params:
+      max_tokens: 450
+      temperature: 0.0
+    samples: 1
+
+  # =========================================================================
+  # 2. AIME OLYMPIAD NUMBER THEORY (AIME 2024-2025 Level)
+  # =========================================================================
+  - category: aime_math
+    text: "Find the smallest positive integer n such that 2^n ends in the four digits 2024 in base 10, or prove that no such integer exists using modular arithmetic modulo 16 and modulo 625. Show the complete derivation."
+    params:
+      max_tokens: 400
+      temperature: 0.0
+    samples: 1
+    assert:
+      # 2024 = 8 (mod 16) while 2^n = 0 (mod 16) for n >= 4, so no such n exists.
+      - type: regex
+        value: "(?i)(no such|does not exist|doesn't exist|cannot exist|impossible|no solution|never)"
+
+  # =========================================================================
+  # 3. FORMAL CONCURRENCY INVARIANTS (Lock-Free Memory Ordering)
+  # =========================================================================
+  - category: concurrency_invariants
+    text: "In the Chase-Lev lock-free work-stealing deque:\n1. The worker thread pushes and pops at the bottom of the deque.\n2. Thieves steal from the top using CAS.\nState the exact memory ordering (Relaxed, Acquire, Release, or SeqCst) required for:\n(a) The thief loading `top`\n(b) The thief's CAS on `top`\n(c) The worker's load of `top` during `pop_bottom`\nExplain why a SeqCst fence or SeqCst ordering is necessary in `pop_bottom` to prevent concurrent thief race on the last element."
+    params:
+      max_tokens: 450
+      temperature: 0.0
+    samples: 1
+
+  # =========================================================================
+  # 4. GAME THEORY & BACKWARD INDUCTION
+  # =========================================================================
+  - category: game_theory
+    text: "Three rational players (P1, P2, P3) divide 100 gold coins using majority voting. P1 proposes first. If >=50% accept, it passes. If rejected, P1 is eliminated, and P2 proposes for the remaining two. If rejected, P2 is eliminated, and P3 takes all 100. Any player prefers more coins, and if indifferent between accepting and rejecting, prefers to eliminate the proposer. What is P1's unique subgame perfect Nash equilibrium proposal (P1, P2, P3)? Show the backward induction steps."
+    params:
+      max_tokens: 350
+      temperature: 0.0
+    samples: 1
+    assert:
+      # P2 wins the 2-player stage alone (1 of 2 votes = 50%), so P3 gets 0 there
+      # and must be bought with 1 coin: (99, 0, 1).
+      - type: regex
+        value: "99\\s*,\\s*0\\s*,\\s*1"
+
+  # =========================================================================
+  # 5. DISCRETE DEDUCTION CRYPTARITHM (Formal Case Elimination)
+  # =========================================================================
+  - category: discrete_deduction
+    text: "In the base-10 cryptarithm CROSS + ROADS = DANGER, distinct letters represent distinct digits 0-9, and leading letters (C, R, D) cannot be zero. Given that R = 6 and S = 3, determine the unique digit assignment for all letters (C, R, O, S, A, D, N, G, E). Show the carry propagation and modular elimination steps."
+    params:
+      max_tokens: 450
+      temperature: 0.0
+    samples: 1
+    assert:
+      # Unique solution: 96233 + 62513 = 158746 (C=9, O=2, A=5, D=1, N=8, G=7, E=4).
+      - type: regex
+        value: "(158746|C\\s*[=:]\\s*9)"
+
+  # =========================================================================
+  # 6. LOGPROB RESIDUAL ENTROPY (Reasoning model softmax fingerprint)
+  # =========================================================================
+  - category: bpe_fingerprint
+    text: "Name a random integer between 1 and 1000. Reply with just the integer."
+    params:
+      max_tokens: 1
+      temperature: 1.0
+      logprobs: true
+      top_logprobs: 5
+    samples: 10
+
+  - category: bpe_fingerprint
+    text: "Pick either the letter X or the letter Y. Reply with just the single character."
+    params:
+      max_tokens: 1
+      temperature: 1.0
+      logprobs: true
+      top_logprobs: 5
+    samples: 10

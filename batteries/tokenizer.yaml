@@ -1,0 +1,35 @@
+version: "tokenizer-v1"
+description: "BPE tokenizer spectrum probes: billed prompt_tokens for fixed texts identify the tokenizer family (4 requests, 1 output token each)"
+
+prompts:
+  - category: tokenizer_probe
+    text: "Hello"
+    params:
+      max_tokens: 1
+      temperature: 0.0
+      probe_key: "probe_anchor"
+    samples: 1
+
+  - category: tokenizer_probe
+    text: "Hello   hello_world  🚀 \n\t\n привет мир "
+    params:
+      max_tokens: 1
+      temperature: 0.0
+      probe_key: "probe_spaces_unicode"
+    samples: 1
+
+  - category: tokenizer_probe
+    text: "Hello def calculate_total_amount(items: list[dict[str, Any]]) -> float: pass"
+    params:
+      max_tokens: 1
+      temperature: 0.0
+      probe_key: "probe_code_signature"
+    samples: 1
+
+  - category: tokenizer_probe
+    text: "Hello 🧮⚡️🚀🌟✨"
+    params:
+      max_tokens: 1
+      temperature: 0.0
+      probe_key: "probe_emojis"
+    samples: 1

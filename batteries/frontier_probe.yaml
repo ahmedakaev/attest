@@ -1,0 +1,21 @@
+version: "frontier-probe-2026"
+description: "Frontier Model Fast Verification Battery (Gemini 3.8, Grok 4.7, GPT-6, Claude 5)"
+
+prompts:
+  # 1. BPE Token Prior Entropy & Logprobs
+  - category: one_token
+    text: "Name a random integer between 1 and 100. Reply with just the integer."
+    params:
+      max_tokens: 150
+      temperature: 1.0
+      logprobs: true
+      top_logprobs: 5
+    samples: 3
+
+  # 2. Identity & Quick Model Claim Verification
+  - category: identity
+    text: "State only your exact architecture or model name in one short phrase."
+    params:
+      max_tokens: 100
+      temperature: 0.0
+    samples: 1

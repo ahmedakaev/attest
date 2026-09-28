@@ -1,0 +1,99 @@
+version: "quick-v1"
+description: "Attest Quick Multi-Tier LLM Verification Battery (Fast Check)"
+
+include:
+  - tokenizer
+
+prompts:
+  - category: one_token
+    text: "Name a random number between 1 and 100. Reply with just the number."
+    params:
+      max_tokens: 1
+      temperature: 1.0
+      logprobs: true
+      top_logprobs: 5
+    samples: 10
+
+  - category: one_token
+    text: "Name a random color. Reply with one word."
+    params:
+      max_tokens: 1
+      temperature: 1.0
+      logprobs: true
+      top_logprobs: 5
+    samples: 10
+
+  - category: one_token
+    text: "Name a random animal. Reply with one word."
+    params:
+      max_tokens: 1
+      temperature: 1.0
+      logprobs: true
+      top_logprobs: 5
+    samples: 10
+
+  - category: one_token
+    text: "Name a random city in Europe. Reply with one word."
+    params:
+      max_tokens: 1
+      temperature: 1.0
+      logprobs: true
+      top_logprobs: 5
+    samples: 10
+
+  - category: one_token
+    text: "Pick a random digit from 0 to 9. Reply with just the digit."
+    params:
+      max_tokens: 1
+      temperature: 1.0
+      logprobs: true
+      top_logprobs: 5
+    samples: 10
+
+  - category: one_token
+    text: "Назови случайное число от 1 до 100. Ответь только числом."
+    params:
+      max_tokens: 1
+      temperature: 1.0
+      logprobs: true
+      top_logprobs: 5
+    samples: 10
+
+  - category: one_token
+    text: "Назови случайный цвет на русском. Одно слово."
+    params:
+      max_tokens: 1
+      temperature: 1.0
+      logprobs: true
+      top_logprobs: 5
+    samples: 10
+
+  - category: one_token
+    text: "Назови случайное животное на русском. Одно слово."
+    params:
+      max_tokens: 1
+      temperature: 1.0
+      logprobs: true
+      top_logprobs: 5
+    samples: 10
+
+  - category: factual
+    text: "What is the capital of Australia? Answer with just the city name."
+    params:
+      max_tokens: 10
+      temperature: 0.0
+    samples: 1
+
+  - category: code
+    text: "Write a python function to check if a string is a palindrome. Return only the code."
+    params:
+      max_tokens: 120
+      temperature: 0.0
+    samples: 1
+
+  - category: style
+    text: "Explain quantum computing to a 10 year old in exactly two sentences."
+    params:
+      max_tokens: 100
+      temperature: 0.7
+    samples: 1
